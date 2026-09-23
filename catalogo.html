@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<script>
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+window.scrollTo(0, 0);
+setTimeout(() => window.scrollTo(0, 0), 50);
+requestAnimationFrame(() => window.scrollTo(0, 0));
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="darkreader-lock">
+<title>Catálogo — SPECS</title>
+<meta name="description" content="Catálogo completo SPECS no atacado. Filtre por categoria e cor, monte seu pedido e envie pelo WhatsApp.">
+<link rel="icon" href="assets/logo-specs.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="page-wrap">
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">SPEC<span>S</span></a>
+      <div class="nav-links">
+        <a href="catalogo.html" class="active">Catálogo</a>
+        <a href="catalogo.html?cat=vestidos">Vestidos</a>
+        <a href="catalogo.html?cat=conjuntos">Conjuntos</a>
+        <a href="catalogo.html?cat=tops">Tops</a>
+        <a href="index.html#sobre">Sobre</a>
+      </div>
+      <div class="nav-actions">
+        <div class="nav-search" id="nav-search">
+          <input type="text" id="nav-search-input" placeholder="Buscar peça..." aria-label="Buscar peça">
+          <button class="icon-btn" id="search-toggle" aria-label="Buscar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          </button>
+        </div>
+        <a class="icon-btn" href="https://wa.me/5511995565835" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-3.6-6.7L20 4l-1 3.5A8 8 0 0 1 20 12Z"/><path d="M8.5 9.5c.3 2.5 2.5 4.7 5 5"/></svg>
+        </a>
+        <button class="icon-btn" aria-label="Pedido" onclick="document.getElementById('cart-fab').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h2l1.6 9.6a2 2 0 0 0 2 1.7h7.8a2 2 0 0 0 2-1.6L20.5 8H7"/><circle cx="10" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+          <span class="cart-badge">0</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="catalog-header">
+    <span class="eyebrow">catálogo completo</span>
+    <h1 style="margin-top:10px;">peças no atacado</h1>
+    <p>Filtre por categoria ou cor, monte seu pedido e envie direto pelo WhatsApp. Preço e quantidade mínima combinados na conversa.</p>
+  </header>
+
+  <div class="catalog-layout">
+    <aside class="filters">
+      <button class="filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="filters-body">
+        <span>Filtros<span class="filters-count" id="filters-count" hidden></span></span>
+        <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="filters-body" id="filters-body">
+        <div class="filter-group">
+          <h5>Categoria</h5>
+          <label class="filter-check"><input type="checkbox" class="cat-filter" value="vestidos"> Vestidos</label>
+          <label class="filter-check"><input type="checkbox" class="cat-filter" value="conjuntos"> Conjuntos</label>
+          <label class="filter-check"><input type="checkbox" class="cat-filter" value="tops"> Tops</label>
+        </div>
+        <div class="filter-group">
+          <h5>Cor</h5>
+          <div class="color-swatch-row">
+            <span class="color-swatch" data-color="Amarelo" style="background:#f5df6b" title="Amarelo"></span>
+            <span class="color-swatch" data-color="Rosa" style="background:#fa9fd8" title="Rosa"></span>
+            <span class="color-swatch" data-color="Azul" style="background:#7fc4ea" title="Azul"></span>
+            <span class="color-swatch" data-color="Branco" style="background:#ffffff" title="Branco"></span>
+            <span class="color-swatch" data-color="Preto" style="background:#1a1a1a" title="Preto"></span>
+            <span class="color-swatch" data-color="Lilás" style="background:#c9a6e0" title="Lilás"></span>
+            <span class="color-swatch" data-color="Marrom" style="background:#6f4330" title="Marrom"></span>
+            <span class="color-swatch" data-color="Bege" style="background:#cdb38b" title="Bege"></span>
+            <span class="color-swatch" data-color="Verde" style="background:#9cc79a" title="Verde"></span>
+          </div>
+        </div>
+        <div class="filter-group">
+          <h5>Outros</h5>
+          <label class="filter-check"><input type="checkbox" id="filter-new-only"> Só novidades</label>
+        </div>
+        <button class="filter-reset" id="filter-reset">Limpar filtros</button>
+      </div>
+    </aside>
+
+    <div>
+      <div class="catalog-toolbar">
+        <span class="result-count" id="result-count">10 peças</span>
+        <select class="sort-select" id="sort-select">
+          <option value="relevancia">Relevância</option>
+          <option value="novidades">Novidades primeiro</option>
+          <option value="nome-az">Nome A-Z</option>
+          <option value="nome-za">Nome Z-A</option>
+        </select>
+      </div>
+      <div class="product-grid" id="catalog-grid"></div>
+    </div>
+  </div>
+</div>
+
+<button id="cart-fab" aria-label="Ver pedido">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h2l1.6 9.6a2 2 0 0 0 2 1.7h7.8a2 2 0 0 0 2-1.6L20.5 8H7"/><circle cx="10" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+  <span class="cart-badge">0</span>
+</button>
+
+<div id="cart-overlay"></div>
+<aside id="cart-drawer">
+  <div class="drawer-header">
+    <h3>Seu pedido</h3>
+    <button class="drawer-close" aria-label="Fechar">&times;</button>
+  </div>
+  <div class="drawer-items" id="drawer-items"></div>
+  <div class="drawer-footer">
+    <p class="hint">O valor e a quantidade mínima são combinados pelo WhatsApp — sem preço fixo aqui, é tudo no atacado.</p>
+    <button class="btn btn-whatsapp btn-block" id="send-order-btn">Enviar pedido pelo WhatsApp</button>
+  </div>
+</aside>
+
+<div id="quickview-overlay"></div>
+
+<script src="js/products.js"></script>
+<script src="js/main.js"></script>
+<script src="js/catalog.js"></script>
+</body>
+</html>
