@@ -78,12 +78,11 @@ function pulseFab() {
 }
 
 function renderCart() {
-  const badge = document.querySelector(".cart-badge");
   const count = cartCount();
-  if (badge) {
+  document.querySelectorAll(".cart-badge").forEach((badge) => {
     badge.textContent = count;
     badge.classList.toggle("show", count > 0);
-  }
+  });
   const list = document.getElementById("drawer-items");
   if (!list) return;
   if (cart.length === 0) {
@@ -533,6 +532,11 @@ function setupHeroSlider() {
     if (dragDX <= -threshold) next();
     else if (dragDX >= threshold) prev();
     else goTo(index);
+    // Safety net: some touch browsers never fire a synthetic click after a
+    // drag, which would leave dragMoved stuck true and silently swallow the
+    // visitor's next real tap. The click handler below still wins the race
+    // when a synthetic click does follow (it fires well within 300ms).
+    setTimeout(() => { dragMoved = false; }, 300);
   }
   window.addEventListener("pointerup", endDrag);
   window.addEventListener("pointercancel", endDrag);

@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     activeColors = [];
     if (newOnly) newOnly.checked = false;
     if (sortSelect) sortSelect.value = "relevancia";
+    if (searchInput) searchInput.value = "";
     render();
   });
 
@@ -94,10 +95,18 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => window.scrollTo(0, 0), 50);
   setTimeout(() => window.scrollTo(0, 0), 150);
 
-  // If scroll moves after render, force it back for 500ms only (was too long)
+  // If scroll moves after render (browser scroll-restore), force it back — but
+  // stop immediately once the visitor scrolls by hand, same as smoothScrollTo().
   let scrollCheckCount = 0;
+  const stopMonitor = () => {
+    clearInterval(monitor);
+    window.removeEventListener("wheel", stopMonitor);
+    window.removeEventListener("touchstart", stopMonitor);
+  };
   const monitor = setInterval(() => {
     if (window.scrollY > 10) window.scrollTo(0, 0);
-    if (++scrollCheckCount > 5) clearInterval(monitor);
+    if (++scrollCheckCount > 5) stopMonitor();
   }, 100);
+  window.addEventListener("wheel", stopMonitor, { passive: true });
+  window.addEventListener("touchstart", stopMonitor, { passive: true });
 });
