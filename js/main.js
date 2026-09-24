@@ -12,11 +12,26 @@ window.addEventListener("pageshow", (e) => {
 // ===== Config =====
 const WHATSAPP_NUMBER = "5511995565835"; // wa.me — número real do perfil @specs
 
+function escapeHtml(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
 // ===== Cart state (mirrored to localStorage) =====
 let cart = [];
 try {
   const saved = localStorage.getItem("specs_cart");
-  if (saved) cart = JSON.parse(saved);
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed)) {
+      cart = parsed.filter(item =>
+        item && typeof item.key === "string" && typeof item.name === "string" &&
+        typeof item.color === "string" && typeof item.img === "string" &&
+        typeof item.id === "string" && typeof item.qty === "number" && item.qty > 0 &&
+        item.key.length < 200 && item.name.length < 200 && item.color.length < 50 &&
+        item.img.length < 500
+      );
+    }
+  }
 } catch (e) {
   cart = [];
 }
@@ -93,11 +108,11 @@ function renderCart() {
   list.innerHTML = cart
     .map(
       (item) => `
-    <div class="drawer-item" data-key="${item.key}">
-      <img src="${item.img}" alt="${item.name}">
+    <div class="drawer-item" data-key="${escapeHtml(item.key)}">
+      <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.name)}">
       <div class="drawer-item-info">
-        <div class="name">${item.name}</div>
-        <div class="meta">Cor: ${item.color}</div>
+        <div class="name">${escapeHtml(item.name)}</div>
+        <div class="meta">Cor: ${escapeHtml(item.color)}</div>
         <div style="display:flex; align-items:center; gap:10px;">
           <div class="qty-stepper">
             <button class="qty-btn" data-action="dec">−</button>
@@ -195,21 +210,21 @@ function buildProductCard(p) {
   const tag = p.isNew ? '<span class="product-tag">Novidade</span>' : p.bestSeller ? '<span class="product-tag best">Mais pedido</span>' : "";
   // on hover the card crossfades to the product video, or to its 2nd photo
   const alt = p.video
-    ? `<video class="card-media-alt" src="${p.video}" poster="${p.poster || p.img}" muted loop playsinline preload="none"></video>`
+    ? `<video class="card-media-alt" src="${escapeHtml(p.video)}" poster="${escapeHtml(p.poster || p.img)}" muted loop playsinline preload="none"></video>`
     : p.images && p.images[1]
-      ? `<img class="card-media-alt" src="${p.images[1]}" alt="" loading="lazy">`
+      ? `<img class="card-media-alt" src="${escapeHtml(p.images[1])}" alt="" loading="lazy">`
       : "";
   div.innerHTML = `
     <div class="product-card-media">
       ${tag}
       ${p.video ? '<span class="product-video-tag" aria-hidden="true">▶ vídeo</span>' : ""}
-      <img class="card-media-main" src="${p.img}" alt="${p.name}" loading="lazy">
+      <img class="card-media-main" src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" loading="lazy">
       ${alt}
     </div>
     <div class="product-card-body">
-      <div class="product-cat">${p.categoryLabel}</div>
-      <div class="product-name">${p.name}</div>
-      <div class="color-dots">${p.colors.map((c) => `<span class="color-dot" style="background:${colorToHex(c)}" title="${c}"></span>`).join("")}</div>
+      <div class="product-cat">${escapeHtml(p.categoryLabel)}</div>
+      <div class="product-name">${escapeHtml(p.name)}</div>
+      <div class="color-dots">${p.colors.map((c) => `<span class="color-dot" style="background:${colorToHex(c)}" title="${escapeHtml(c)}"></span>`).join("")}</div>
       <div class="product-price-row">
         <span class="wholesale-note">Atacado · sob consulta</span>
         <button class="add-to-cart-btn" aria-label="Adicionar ao pedido" data-action="quick-add">+</button>
@@ -246,13 +261,13 @@ function openQuickview(p) {
 
   const thumbsHtml = multi
     ? `<div class="quickview-thumbs">
-        ${media.map((m, i) => `<button class="qv-thumb" data-i="${i}" aria-label="Mídia ${i + 1}"><img src="${m.type === "video" ? m.poster : m.src}" alt="">${m.type === "video" ? '<span class="qv-play">▶</span>' : ""}</button>`).join("")}
+        ${media.map((m, i) => `<button class="qv-thumb" data-i="${i}" aria-label="Mídia ${i + 1}"><img src="${escapeHtml(m.type === "video" ? m.poster : m.src)}" alt="">${m.type === "video" ? '<span class="qv-play">▶</span>' : ""}</button>`).join("")}
       </div>`
     : "";
   const slidesHtml = media
     .map((m) => `<div class="qv-slide">${m.type === "video"
-      ? `<video src="${m.src}" poster="${m.poster}" muted loop playsinline preload="metadata"></video>`
-      : `<img src="${m.src}" alt="${p.name}" draggable="false">`}</div>`)
+      ? `<video src="${escapeHtml(m.src)}" poster="${escapeHtml(m.poster)}" muted loop playsinline preload="metadata"></video>`
+      : `<img src="${escapeHtml(m.src)}" alt="${escapeHtml(p.name)}" draggable="false">`}</div>`)
     .join("");
   const galleryUi = multi
     ? `<span class="qv-counter"><span id="qv-current">1</span> / ${media.length}</span>
@@ -262,7 +277,7 @@ function openQuickview(p) {
     : "";
 
   overlay.innerHTML = `
-    <div class="quickview-modal ${multi ? "" : "no-thumbs"}" role="dialog" aria-modal="true" aria-label="${p.name}">
+    <div class="quickview-modal ${multi ? "" : "no-thumbs"}" role="dialog" aria-modal="true" aria-label="${escapeHtml(p.name)}">
       <button class="quickview-close" aria-label="Fechar">&times;</button>
       ${thumbsHtml}
       <div class="quickview-gallery">
@@ -270,14 +285,14 @@ function openQuickview(p) {
         ${galleryUi}
       </div>
       <div class="quickview-info">
-        <div class="product-cat">${p.categoryLabel}</div>
-        <h3>${p.name}</h3>
+        <div class="product-cat">${escapeHtml(p.categoryLabel)}</div>
+        <h3>${escapeHtml(p.name)}</h3>
         <p class="qv-wholesale">Atacado · preço e quantidade mínima pelo WhatsApp</p>
-        <p class="desc">${p.desc}</p>
+        <p class="desc">${escapeHtml(p.desc)}</p>
         <div class="quickview-colors">
-          <h5>Cor: <span id="qv-color-name">${p.colors[0]}</span></h5>
+          <h5>Cor: <span id="qv-color-name">${escapeHtml(p.colors[0])}</span></h5>
           <div class="color-swatch-row">
-            ${p.colors.map((c, i) => `<button class="color-swatch ${i === 0 ? "selected" : ""}" data-color="${c}" style="background:${colorToHex(c)}" aria-label="${c}"></button>`).join("")}
+            ${p.colors.map((c, i) => `<button class="color-swatch ${i === 0 ? "selected" : ""}" data-color="${escapeHtml(c)}" style="background:${colorToHex(c)}" aria-label="${escapeHtml(c)}"></button>`).join("")}
           </div>
         </div>
         <div class="quickview-actions">
