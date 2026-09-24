@@ -6,6 +6,7 @@ if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 window.scrollTo(0, 0);
 window.addEventListener("pageshow", (e) => {
   if (e.persisted) window.scrollTo(0, 0);
+  document.querySelector(".page-wrap")?.classList.remove("is-scrolling");
 });
 
 // ===== Config =====
@@ -383,7 +384,7 @@ function setupQuickviewGallery(overlay) {
 let scrollAnim = null;
 function smoothScrollTo(target, duration) {
   // On mobile, use faster animation (300ms vs 1100ms) to avoid jank
-  if (!duration) duration = window.matchMedia("(max-width: 600px)").matches ? 300 : 1100;
+  if (!duration) duration = window.matchMedia("(max-width: 600px)").matches ? 250 : 600;
   const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
   const endY = Math.max(0, target.getBoundingClientRect().top + window.scrollY - margin);
   const root = document.documentElement;
@@ -398,11 +399,13 @@ function smoothScrollTo(target, duration) {
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const t0 = performance.now();
   let rafId;
-  // CSS smooth scrolling would smooth every frame again, so it is paused while we animate
   root.style.scrollBehavior = "auto";
   pageWrap?.classList.add("is-scrolling");
 
+  const safetyTimer = setTimeout(() => stop(), duration + 400);
+
   function stop() {
+    clearTimeout(safetyTimer);
     cancelAnimationFrame(rafId);
     root.style.scrollBehavior = "";
     pageWrap?.classList.remove("is-scrolling");
@@ -434,11 +437,11 @@ function navigateWithBlur(url) {
     return;
   }
   pageWrap.classList.add("is-scrolling");
-  // On mobile, use shorter delay to avoid feeling stuck
-  const delay = window.matchMedia("(max-width: 600px)").matches ? 100 : 220;
+  const delay = window.matchMedia("(max-width: 600px)").matches ? 60 : 120;
   window.setTimeout(() => {
     window.location.href = url;
   }, delay);
+  setTimeout(() => pageWrap.classList.remove("is-scrolling"), 1500);
 }
 
 // ===== Hero slider (autoplay, arrows, dots, swipe) =====
@@ -476,7 +479,7 @@ function setupHeroSlider() {
     dots.forEach((d, di) => d.classList.toggle("active", di === index));
     track.classList.add("is-moving");
     clearTimeout(moveTimer);
-    moveTimer = setTimeout(() => track.classList.remove("is-moving"), 380);
+    moveTimer = setTimeout(() => track.classList.remove("is-moving"), 280);
     syncVideos();
     restartAutoplay();
   }
@@ -653,6 +656,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.scrollTo(0, 0);
       requestAnimationFrame(() => pageWrap.classList.remove("is-scrolling"));
     });
+    setTimeout(() => pageWrap.classList.remove("is-scrolling"), 800);
   }
 
   // Populate every carousel / grid marked with data-product-list on the page
